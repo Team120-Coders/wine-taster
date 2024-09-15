@@ -1,0 +1,46 @@
+.aside {
+  padding-right: 20px;
+
+  &-header {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.clear-button {
+  background-color: #ff99ae;
+  color: #e13c5e;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.checkout {
+  width: 350px;
+  margin-top: 20px;
+  text-align: left;
+  background-color: white;
+  padding: 20px;
+  border-radius: 40px;
+}
+
+.checkout p {
+  background-color: white;
+  margin: 5px 0;
+}
+
+.checkout h3 {
+  background-color: white;
+  margin-bottom: 20px;
+}
+
+.checkout button {
+  padding: 10px 20px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
