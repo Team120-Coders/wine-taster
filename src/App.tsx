@@ -1,87 +1,72 @@
 import './App.css';
 import {
   HashRouter,
-  Navigate,
   Route,
   Routes,
 } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Header } from './Commponents/header/Header';
 import { WineFilter } from './Commponents/WineFilter';
 import { Aside } from 'Commponents/Aside/Aside';
 import { WineList } from 'Commponents/WineList/WineList';
 import { Modal } from 'Commponents/Modal/Modal';
 import { Wine } from 'types/Wine'; 
-import { getWines } from 'api/wines';
-import { authClient } from 'api/authClient';
-import axios from 'axios';
-import { User } from 'types/User';
 import { Profiel } from 'Profiel/Profiel';
 import { Login } from 'Commponents/Login/Login';
+import { getWines } from 'api/authClient';
 
 export const App: React.FC = () => {
   const [wines, setWines] = useState<Wine[]>([]); 
   const [loader, setLoader] = useState(false);
   const [filter, setFilter] = useState('All');
   const [search, setSearch] = useState('');
-  const [token, setToken] = useState<string | null>(null); 
-  const [users, setUsers] = useState<User[]>([]);
-  const [email, setEmail] = useState('');
-  const [psw, setPsw] = useState('');
+  const [selectedWine, setSelectedWine] = useState<Wine | null>(null);
+  const [cardItems, setCardItems] = useState<Wine[]>([]);
+  const token = localStorage.getItem('jwtToken');
+  const email = localStorage.getItem('mail');
+  const password = localStorage.getItem('pass');
 
-  const handleAuth = async () => {
-    try {
-      const response = await authClient.login(email, psw);
-      setToken(response.token);
-    } catch (err) {
-      console.error('Ошибка авторизации', err);
+  
+  useEffect(() => {
+    const storedCardItems = localStorage.getItem('cardItems');
+    if (storedCardItems) {
+      setCardItems(JSON.parse(storedCardItems));
     }
-  };
+  }, []);
 
   useEffect(() => {
-    let isMounted = true;
-    const controller = new AbortController();
+    setLoader(true);
 
-    const fetchWines = async () => {
-      if (!token) return;
+    setTimeout(() => {
+      localStorage.setItem('cardItems', JSON.stringify(cardItems));
+      setLoader(false);
+    }, 100);
+  }, [cardItems]);
 
-      try {
-        setLoader(true);
-        const response: Wine[] = await getWines(token);
-        if (isMounted) {
-          setWines(response);
-        }
-      } catch (err) {
-        console.error('Ошибка при загрузке вин', err);
-      } finally {
-        setLoader(false);
-      }
-    };
+  useEffect(() => {
+    setLoader(true);
 
-    handleAuth().then(fetchWines);
+    setTimeout(() => {
+      getWines(email, password)
+        .then(setWines)
+        .finally(() => setLoader(false));
+    }, 100);
+  }, [email, password, token]);
+  
+  console.log(token);
+  console.log(localStorage);
+  console.log(wines);
 
-    return () => {
-      isMounted = false;
-      controller.abort();
-    };
-  }, [token]); 
-
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await axios.post('https://wine-taster-app-production.up.railway.app/api/login', {
-        email,
-        password
-      });
-      console.log('Login successful', response.data);
-      return response.data;  // Например, токен авторизации
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Ошибка авторизации', error.message);
-      } else {
-        console.error('Произошла ошибка', error);
-      }
-    }
-  };
+  const addToCard =  useCallback((wine: Wine) => {
+    setCardItems((previous) => {
+      const wineExists = previous.some(item => item.id === wine.id);
+      if (!wineExists) {
+        return [...previous, wine];
+      } 
+      
+      return previous;
+    });
+  }, []);
 
   const handleWineFilter = wines
     .filter((wine) => {
@@ -101,30 +86,31 @@ export const App: React.FC = () => {
     .filter((wine) => wine.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <HashRouter > 
-    <Routes>
-      <Route path='/' element={<Login />} />
-      <Route path='/profiel' element={<Profiel />} />
-      <Route path="/www" element={<>
-      <div className='content'>
-        <div className='main-content'>
-          <Header />
-
-          {loader ? (
-            <p>Loading wines...</p>
-          ) : (
-            <>
-              <WineFilter filter={filter} setFilter={setFilter} search={search} setSearch={setSearch} />
-              <WineList wines={handleWineFilter} />
-            </>
-          )}
-        </div>
-
-        <Aside />
-      </div>
-      <Modal />
-    </>} />
-    </Routes>
+    <HashRouter> 
+      <Routes>
+        <Route 
+          path='/' 
+          element={<Login />}
+        />
+        <Route path='/profiel' element={<Profiel />} />
+        <Route path="/www" element={<>
+          <div className='content'>
+            <div className='main-content'>
+              <Header />
+              {loader ? (
+                <p>Loading wines...</p>
+              ) : (
+                <>
+                  <WineFilter filter={filter} setFilter={setFilter} search={search} setSearch={setSearch} />
+                  <WineList wines={handleWineFilter} setSelectedWine={setSelectedWine} />
+                </>
+              )}
+            </div>
+            <Aside items={cardItems} setCardItems={setCardItems}/>
+          </div>
+          {selectedWine ? <Modal selectedWine={selectedWine} setSelectedWine={setSelectedWine} add={addToCard}/> : ''}
+        </>} />
+      </Routes>
     </HashRouter>
   );
 };

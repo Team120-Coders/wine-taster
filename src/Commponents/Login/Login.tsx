@@ -1,43 +1,124 @@
-import React from "react";
-import '@fortawesome/fontawesome-free/css/all.css';
-
-type Props = {
-  
-}
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { loginUser, registerUser } from 'api/authClient';
+import './Login.scss';
 
 export const Login: React.FC = () => {
-  return (
-    <div className="field">
-      <form className="login-form">
-        <div className="field">
-          <p className="control has-icons-left has-icons-right">
-            <input className="input" type="email" placeholder="Email" />
-            <span className="icon is-small is-left">
-              <i className="fas fa-envelope"></i>
-            </span>
-            <span className="icon is-small is-right">
-              <i className="fas fa-check"></i>
-            </span>
-          </p>
-        </div>
-        
-        <div className="field">
-          <p className="control has-icons-left">
-            <input className="input" type="password" placeholder="Password" />
-            <span className="icon is-small is-left">
-              <i className="fas fa-lock"></i>
-            </span>
-          </p>
-        </div>
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [isLoginMode, setIsLoginMode] = useState(true);
 
-        <div className="field">
-          <p className="control">
-            <button className="button is-success">
-              Login
-            </button>
-          </p>
-        </div>
-      </form>
+  const [login, setLogin] = useState('');
+  const navigate = useNavigate();
+  const eml = localStorage.setItem('mail',email);
+  const psw = localStorage.setItem('pass',password);
+
+  const handleLogin = async () => {
+    try {
+      const { token } = await loginUser( email, password );
+      localStorage.setItem('jwtToken', token);
+      navigate('/www');
+    } catch (error) {
+      console.error('Ошибка при входе:', error);
+    }
+  };
+
+  const handleRegister = async () => {
+    try {
+      const userData = {
+        email,
+        login,
+        password,
+        repeatPassword: password,
+        firstName,
+        lastName,
+      };
+  
+      await registerUser(userData);
+      await loginUser(
+        email,
+        password,
+      );
+      localStorage.setItem('mail', email);
+      localStorage.setItem('psw', password);
+      navigate('/www');
+    } catch (error) {
+      console.error('Ошибка при регистрации:', error);
+    }
+  };
+
+
+
+  return (
+    <div className="auth-container">
+      <div className="auth-header">
+        <button 
+          className={`toggle-button ${isLoginMode ? 'active' : ''}`}
+          onClick={() => setIsLoginMode(true)}
+        >
+          Log In
+        </button>
+        <button 
+          className={`toggle-button ${!isLoginMode ? 'active' : ''}`}
+          onClick={() => setIsLoginMode(false)}
+        >
+          Register
+        </button>
+      </div>
+      
+      {isLoginMode ? (
+        <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+          <input
+            type="email"
+            placeholder="User Id"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Enter Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button className="submit-button" type="submit">Log In</button>
+        </form>
+      ) : (
+        <form onSubmit={(e) => { e.preventDefault(); handleRegister(); }}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Login"
+            value={login}
+            onChange={(e) => setLogin(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="First Name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Last Name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
+          <button className="submit-button" type="submit">Register</button>
+        </form>
+      )}
     </div>
   );
 };

@@ -44,6 +44,11 @@
   font-size: 20px;
   font-weight: bold;
   color: #f44336;
+
+  &_title {
+    background-color: white;
+    color: #666;
+  }
 }
 
 .item-wrapper {

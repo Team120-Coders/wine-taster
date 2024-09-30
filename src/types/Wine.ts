@@ -1,13 +1,13 @@
 export interface Wine {
   id: number;
   name: string;
-  image_url: string;
   produser: string;
   region:string;
+  grape_variety: string;
   vintage: number;
   price: number;
-  description: string;
-  grape_variety: string;
   alcohol_content: number;
+  description: string;
+  image_url: string;
   size: number;
 }

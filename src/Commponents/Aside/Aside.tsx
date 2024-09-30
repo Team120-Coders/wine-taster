@@ -1,25 +1,31 @@
 import React from "react";
 import "./Aside.scss";
+import { Wine } from "types/Wine";
 import { AsideItem } from "./AsideItem";
 
-export const Aside: React.FC = () => {
-  return (
+type Props = {
+  items: Wine[];
+  setCardItems: ([]) => void;
+};
 
-    <><div className="aside">
-        <div className="cart-header">
-          <h2>Cart</h2>
-          <button className="clear-button">Clear</button>
-        </div>
-      <AsideItem /> 
-      <AsideItem />
-      <AsideItem />
-      <div className="checkout">
-        <p>Subtotal: $96</p>
-        <p>Tax: $2</p>
-        <p>Discount: $0</p>
-        <h3>Total: $98</h3>
-        <button>Charge customer</button>
+export const Aside: React.FC<Props> = ({ items, setCardItems }) => {
+  const handelClear = () => {
+    setCardItems([]);
+  };
+
+  return (
+    <div className="aside">
+      <div className="cart-header">
+        <h2 className="cart_title">Cart</h2>
+        <button className="clear-button" onClick={handelClear}>Clear</button>
       </div>
-    </div></>
-  )
-}
+      {items.length === 0 ? (
+        <p>Here you can add wine that you like</p>
+      ) : (
+        items.map((wine, index) => (
+          <AsideItem key={index} wine={wine} />
+        ))
+      )}
+    </div>
+  );
+};

@@ -1,21 +1,20 @@
 import React from "react";
 import "./AsideItem.scss";
+import { Wine } from "types/Wine";
 
-export const AsideItem:React.FC = () => {
+type Props = {
+  wine: Wine;
+}
+
+export const AsideItem:React.FC<Props> = ({ wine }) => {
   return (
     <><div className="cart-item">
-        <img className="wine-img" src="/imges/wine4.png" alt="wine" />
+        <img className="wine-img" src={wine.image_url} alt="wine" />
 
         <div className="item-info">
-          <p className="item-title">Casa Castillo Monastrell</p>
-          <p className="item-description">Bottle size: 750 ml</p>
-          <span className="item-price">$20</span>
-        </div>
-
-        <div className="quantity">
-          <button className="aside-button">-</button>
-          <span>2</span>
-          <button className="aside-button">+</button>
+          <p className="item-title">{wine.name}</p>
+          <p className="item-description">{wine.description}</p>
+          <span className="item-price">{wine.price}</span>
         </div>
       </div></>
   )
