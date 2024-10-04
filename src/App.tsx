@@ -11,18 +11,18 @@ import { Aside } from 'Commponents/Aside/Aside';
 import { WineList } from 'Commponents/WineList/WineList';
 import { Modal } from 'Commponents/Modal/Modal';
 import { Wine } from 'types/Wine'; 
-import { Profiel } from 'Profiel/Profiel';
 import { Login } from 'Commponents/Login/Login';
-import { getWines } from 'api/authClient';
+import { getUserProfile, getWines } from 'api/authClient';
+import { User } from 'types/User';
 
 export const App: React.FC = () => {
   const [wines, setWines] = useState<Wine[]>([]); 
+  const [user, setUser] = useState<User>();
   const [loader, setLoader] = useState(false);
   const [filter, setFilter] = useState('All');
   const [search, setSearch] = useState('');
   const [selectedWine, setSelectedWine] = useState<Wine | null>(null);
   const [cardItems, setCardItems] = useState<Wine[]>([]);
-  const token = localStorage.getItem('jwtToken');
   const email = localStorage.getItem('mail');
   const password = localStorage.getItem('pass');
 
@@ -33,6 +33,14 @@ export const App: React.FC = () => {
       setCardItems(JSON.parse(storedCardItems));
     }
   }, []);
+
+  useEffect(() => {
+
+    setLoader(true);
+    getUserProfile(email, password)
+    .then(setUser)
+    .finally(() => setLoader(false));
+  }, [email, password])
 
   useEffect(() => {
     setLoader(true);
@@ -51,9 +59,8 @@ export const App: React.FC = () => {
         .then(setWines)
         .finally(() => setLoader(false));
     }, 100);
-  }, [email, password, token]);
+  }, [email, password]);
   
-  console.log(token);
   console.log(localStorage);
   console.log(wines);
 
@@ -92,11 +99,10 @@ export const App: React.FC = () => {
           path='/' 
           element={<Login />}
         />
-        <Route path='/profiel' element={<Profiel />} />
         <Route path="/www" element={<>
           <div className='content'>
             <div className='main-content'>
-              <Header />
+              <Header user={user} />
               {loader ? (
                 <p>Loading wines...</p>
               ) : (

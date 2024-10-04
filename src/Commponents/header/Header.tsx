@@ -1,22 +1,24 @@
 import React from "react";
 import './Header.scss';
-import { NavLink } from "react-router-dom";
+import { User } from "types/User";
 
-export const Header: React.FC = () => {
+type Props = {
+  user: User | undefined;
+}
+
+export const Header: React.FC<Props> = ({ user }) => {
   return (
     <div className="header">
       <h1 className="title">Wine Library</h1>
 
       <div className="user">
-        <NavLink className="user-link" to="/login">
             <img 
               className="user-photo" 
               src="" 
               alt="" 
             />
-            <span className="user-name">Parnel Horn</span>
-            <p className="user-status">Emplayee</p>
-        </NavLink>
+            <span className="user-name">{user?.first_name}</span>
+            <p className="user-status">{user?.last_name}</p>
       </div>
     </div>
   )
