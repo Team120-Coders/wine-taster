@@ -1,0 +1,21 @@
+* {
+  font-family: "Roboto Mono", monospace;
+  font-optical-sizing: auto;
+  font-style: normal;
+  background-color: #F4FCF9;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.main-content {
+  width: 70%;
+  padding-inline: 40px;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+}

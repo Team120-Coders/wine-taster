@@ -1,0 +1,30 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  margin-bottom: 50px;
+}
+
+.title {
+  font-size: 42px;
+  margin: 0;
+}
+
+.user {
+  align-items: center;
+
+  &-link {
+    text-decoration: none;
+  }
+
+  &-name {
+    color: black;
+  }
+
+  &-status {
+    margin: 0;
+    font-size: 14px;
+    line-height: 21px;
+    color: #BDBDBD;
+  }
+}
