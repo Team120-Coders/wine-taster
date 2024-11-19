@@ -9,5 +9,6 @@ public class CartItemResponseDto {
     private Long id;
     private Long wineId;
     private String wineName;
+    private String imageUrl;
     private int quantity;
 }

@@ -10,5 +10,6 @@ import org.mapstruct.Mapping;
 public interface CartItemMapper {
     @Mapping(target = "wineId", source = "wine.id")
     @Mapping(target = "wineName", source = "wine.name")
+    @Mapping(target = "imageUrl", source = "wine.imageUrl")
     CartItemResponseDto toDto(CartItem cartItem);
 }
